@@ -3,11 +3,12 @@
 require_once('../tools/functions.php');
 require_once('../classes/product-image.class.php');
 
-$code = $name = $category = $price = $image = $imageTemp = '';
+$code = $name = $category = $price = $image = $imageTemp = $imageSize= '';
 $codeErr = $nameErr = $categoryErr = $priceErr = $imageErr = '';
 
 $uploadDir = '../uploads/';
 $allowedType = ['jpg', 'jpeg', 'png'];
+$maximgsize= 5242880; //5 megabytes in bytes.
 
 $productObj = new ProductImage();
 
@@ -19,6 +20,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST'){
     $price = clean_input($_POST['price']);
     $image = $_FILES['product_image']['name'];
     $imageTemp = $_FILES['product_image']['tmp_name'];
+    $imageSize = $_FILES['product_image']['size'];
 
     if(empty($code)){
         $codeErr = 'Product Code is required.';
@@ -47,6 +49,10 @@ if($_SERVER['REQUEST_METHOD'] == 'POST'){
         $imageErr = 'Product image is required.';
     }else if(!in_array($imageFileType, $allowedType)){
         $imageErr = 'Accepted files are jpg, jpeg, and png only.';
+    }
+
+    if($imageSize > $maximgsize){
+        $imageErr = 'Must not Exceed 5 Megabytes.';
     }
 
     // If there are validation errors, return them as JSON
